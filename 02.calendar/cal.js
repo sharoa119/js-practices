@@ -2,9 +2,9 @@
 
 // 今日の日付
 const today = new Date();
-console.log(today);
+console.log(today.toLocaleString());
 
-// 今日の日付から年・月・日・曜日を取得
+//今日の日付から年・月・日・曜日を取得
 const year = today.getFullYear();
 const month = today.getMonth() + 1;
 const date = today.getDate();
@@ -17,5 +17,20 @@ console.log(blanks + month +'月' + year);
 
 //　日から土を表示
 const week = ['日','月','火','水','木','金','土'];
-const displayweek = week.join(' ');
-console.log(displayweek);
+const displayWeek = week.join(' ');
+console.log(displayWeek);
+
+// 月初と月末を取得
+const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+console.log(firstDay.toLocaleString());
+console.log(lastDay.toLocaleString());
+
+// 月初の曜日を取得
+const firstDayOfWeek = firstDay.getDay();
+console.log(firstDayOfWeek);
+// それに合わせてスペースを入力
+const space = ' '.repeat(firstDayOfWeek);
+console.log(space);
+
