@@ -1,36 +1,42 @@
 #!/usr/bin/env node
 
-// 今日の日付
+import minimist from "minimist";
+
+const { y, m } = minimist(process.argv.slice(2));
+
 const today = new Date();
-console.log(today.toLocaleString());
+const year = y || today.getFullYear();
+const month = m || today.getMonth() + 1;
 
-//今日の日付から年・月・日・曜日を取得
-const year = today.getFullYear();
-const month = today.getMonth() + 1;
-const date = today.getDate();
-const day = today.getDay();
+const firstDay = new Date(year, month - 1);
+const lastDay = new Date(year, month, 0);
 
-// 月と年の表示
-const blank = ' ';
-const blanks = blank.repeat(6);
-console.log(blanks + month +'月' + year);
+console.log(" ".repeat(6) + month + "月" + " " + year);
 
-//　日から土を表示
-const week = ['日','月','火','水','木','金','土'];
-const displayWeek = week.join(' ');
-console.log(displayWeek);
+const week = ["日", "月", "火", "水", "木", "金", "土"];
+console.log(week.join(" "));
 
-// 月初と月末を取得
-const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-
-console.log(firstDay.toLocaleString());
-console.log(lastDay.toLocaleString());
-
-// 月初の曜日を取得
 const firstDayOfWeek = firstDay.getDay();
-console.log(firstDayOfWeek);
-// それに合わせてスペースを入力
-const space = ' '.repeat(firstDayOfWeek);
-console.log(space);
 
+for (let space = 0; space < firstDayOfWeek; space++) {
+  process.stdout.write("   ");
+}
+
+const end = lastDay.getDate().toLocaleString();
+
+for (let days = 1; days <= end; days++) {
+  const date = new Date(year, month - 1, days);
+  const dayOfWeek = date.getDay();
+
+  if (days < 10) {
+    process.stdout.write(" ");
+  }
+  process.stdout.write(days.toString());
+
+  if (dayOfWeek === 6) {
+    process.stdout.write("\n");
+  } else {
+    process.stdout.write(" ");
+  }
+}
+console.log();
