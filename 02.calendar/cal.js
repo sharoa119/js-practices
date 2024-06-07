@@ -2,41 +2,38 @@
 
 import minimist from "minimist";
 
-const { y, m } = minimist(process.argv.slice(2));
+const args = minimist(process.argv.slice(2));
+const yearArg = args.y;
+const monthArg = args.m;
 
 const today = new Date();
-const year = y || today.getFullYear();
-const month = m || today.getMonth() + 1;
+const year = yearArg ?? today.getFullYear();
+const month = monthArg ?? today.getMonth() + 1;
 
 const firstDay = new Date(year, month - 1);
 const lastDay = new Date(year, month, 0);
 
-console.log(" ".repeat(6) + month + "月" + " " + year);
+console.log(`${" ".repeat(6)}${month}月 ${year}`);
 
-const week = ["日", "月", "火", "水", "木", "金", "土"];
-console.log(week.join(" "));
+const dayNames = ["日", "月", "火", "水", "木", "金", "土"];
+console.log(dayNames.join(" "));
 
-const firstDayOfWeek = firstDay.getDay();
+process.stdout.write("   ".repeat(firstDay.getDay()));
 
-for (let space = 0; space < firstDayOfWeek; space++) {
-  process.stdout.write("   ");
-}
+let currentDate = firstDay;
 
-const end = lastDay.getDate().toLocaleString();
+while (currentDate <= lastDay) {
+  const day = currentDate.getDate().toString().padStart(2, " ");
+  const dayOfWeek = currentDate.getDay();
 
-for (let days = 1; days <= end; days++) {
-  const date = new Date(year, month - 1, days);
-  const dayOfWeek = date.getDay();
-
-  if (days < 10) {
-    process.stdout.write(" ");
-  }
-  process.stdout.write(days.toString());
+  process.stdout.write(day);
 
   if (dayOfWeek === 6) {
     process.stdout.write("\n");
   } else {
     process.stdout.write(" ");
   }
+
+  currentDate.setDate(currentDate.getDate() + 1);
 }
 console.log();
