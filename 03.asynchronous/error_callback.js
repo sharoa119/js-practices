@@ -10,14 +10,10 @@ db.run(
     db.run(
       "INSERT INTO non_existing_table (title) VALUES ('cherry')",
       (err) => {
-        if (err) {
-          console.error(err.message);
-        }
+        console.error(err.message);
 
         db.all("SELECT * FROM non_existing_table", (err) => {
-          if (err) {
             console.error(err.message);
-          }
 
           db.run("DROP TABLE books", () => {
             db.close();
