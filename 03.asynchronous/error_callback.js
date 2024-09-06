@@ -13,7 +13,7 @@ db.run(
         console.error(err.message);
 
         db.all("SELECT * FROM non_existing_table", (err) => {
-            console.error(err.message);
+          console.error(err.message);
 
           db.run("DROP TABLE books", () => {
             db.close();
