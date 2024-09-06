@@ -13,7 +13,7 @@ db.run(
       db.run("INSERT INTO books (title) VALUES ('blueberry')", function () {
         console.log(this.lastID);
 
-        db.all("SELECT * FROM books", (_unusedErr, rows) => {
+        db.all("SELECT * FROM books", (_err, rows) => {
           rows.forEach((row) => {
             console.log(row);
           });
