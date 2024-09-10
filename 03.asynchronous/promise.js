@@ -4,18 +4,38 @@ import sqlite3 from "sqlite3";
 
 const db = new sqlite3.Database(":memory:");
 
-const run = (sql, params = []) => {
-  return new Promise((resolve) => {
-    db.run(sql, params, function () {
-      resolve(this.lastID);
+export const run = (sql, params = []) => {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(this);
+      }
     });
   });
 };
 
-const all = (sql, params = []) => {
-  return new Promise((resolve) => {
-    db.all(sql, params, (_err, rows) => {
-      resolve(rows);
+export const all = (sql, params = []) => {
+  return new Promise((resolve, reject) => {
+    db.all(sql, params, (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+};
+
+export const close = () => {
+  return new Promise((resolve, reject) => {
+    db.close((err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
     });
   });
 };
@@ -24,12 +44,12 @@ run(
   "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL UNIQUE)",
 )
   .then(() => run("INSERT INTO books (title) VALUES ('cherry')"))
-  .then((lastID) => {
-    console.log(lastID);
+  .then((result) => {
+    console.log(result.lastID);
     return run("INSERT INTO books (title) VALUES ('blueberry')");
   })
-  .then((lastID) => {
-    console.log(lastID);
+  .then((result) => {
+    console.log(result.lastID);
     return all("SELECT * FROM books");
   })
   .then((rows) => {
@@ -38,10 +58,4 @@ run(
     });
     return run("DROP TABLE books");
   })
-  .then(() => {
-    db.close();
-  })
-  .catch((err) => {
-    console.error(err.message);
-    db.close();
-  });
+  .then(() => close());
