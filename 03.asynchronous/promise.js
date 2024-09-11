@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { run, all, close } from "./dbPromises.js";
+import { run, all, close } from "./db_promise.js";
 
 run(
   "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL UNIQUE)",
