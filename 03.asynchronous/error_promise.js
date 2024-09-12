@@ -22,7 +22,4 @@ run(
 
     return run(db, "DROP TABLE books");
   })
-  .then(() => close(db))
-  .catch((err) => {
-    console.error(err.message);
-  });
+  .then(() => close(db));
