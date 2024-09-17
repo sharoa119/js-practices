@@ -5,27 +5,22 @@ import { run, all, close } from "./db_promise.js";
 
 const db = new sqlite3.Database(":memory:");
 
-async function execute() {
-  await run(
-    db,
-    "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL UNIQUE)",
-  );
-  const result1 = await run(db, "INSERT INTO books (title) VALUES ('cherry')");
-  console.log(result1.lastID);
+await run(
+  db,
+  "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL UNIQUE)",
+);
 
-  const result2 = await run(
-    db,
-    "INSERT INTO books (title) VALUES ('blueberry')",
-  );
-  console.log(result2.lastID);
+const result1 = await run(db, "INSERT INTO books (title) VALUES ('cherry')");
+console.log(result1.lastID);
 
-  const rows = await all(db, "SELECT * FROM books");
-  rows.forEach((row) => {
-    console.log(row);
-  });
+const result2 = await run(db, "INSERT INTO books (title) VALUES ('blueberry')");
+console.log(result2.lastID);
 
-  await run(db, "DROP TABLE books");
-  await close(db);
-}
+const rows = await all(db, "SELECT * FROM books");
+rows.forEach((row) => {
+  console.log(row);
+});
 
-execute();
+await run(db, "DROP TABLE books");
+
+await close(db);
