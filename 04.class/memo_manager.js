@@ -1,4 +1,4 @@
-import { MemoStorage } from "./memo_storage";
+import { MemoStorage } from "./memo_storage.js";
 
 // メモの 作成、編集、削除、取得 を管理
 export class MemoManager {
@@ -14,14 +14,18 @@ export class MemoManager {
 
   // メモを追加（標準入力で内容を受け取る）
   addMemo(content) {
+    if (!content || content.trim().length === 0) {
+      console.error("Memo content cannot be empty.");
+      return;
+    }
     const newMemo = { content };
     this.memos.push(newMemo);
     this.storage.save(this.memos);
   }
 
   // メモを参照（全文表示）
-  getMemo(index) {
-    return this.memos[index] ? this.memos[index].content : null;
+  getMemo(content) {
+    return this.memos.find((memo) => memo.content === content); // contentで検索
   }
 
   // メモを削除（選択したメモを削除）
