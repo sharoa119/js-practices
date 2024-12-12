@@ -1,6 +1,6 @@
 import inquirer from "inquirer";
 import readline from "readline"; // readlineモジュールをインポート
-import { MemoManager } from "./memo_manager"; // メモ管理ロジックをインポート
+import { MemoManager } from "./memo_manager.js"; // メモ管理ロジックをインポート
 
 export class MemoApp {
   constructor() {
@@ -21,9 +21,72 @@ export class MemoApp {
     } else if (args.includes("-d")) {
       await this.deleteMemo();
     } else if (args.length === 0) {
-      this.askForMemoContent(); // 標準入力を受け付けてメモを追加
+      await this.askForMemoContent(); // 標準入力を受け付けてメモを追加
     } else {
       console.log("Usage: memo.js -l | -r | -d");
     }
+  }
+
+  askForMemoContent() {
+    console.log("Enter your memo (type 'EOF' on a new line to finish):");
+
+    let content = "";
+    this.rl.on("line", (line) => {
+      if (line === "EOF") {
+        this.rl.close();
+        this.manager.addMemo(content.trim()); // 改行を含むメモを保存
+        console.log("Memo added.");
+      } else {
+        content += line + "\n"; // 改行を追加
+      }
+    });
+  }
+
+  getMemos() {
+    return this.manager.listMemos(); // MemoManager からメモ一覧を取得
+  }
+
+  listMemos() {
+    const memos = this.getMemos();
+    memos.forEach((memo, index) => {
+      // 2. メモを一つずつ処理
+      console.log(`${index + 1}: ${memo.content.split("\n")[0]}`); // 3. 表示
+    });
+  }
+
+  async viewMemo() {
+    const memos = this.getMemos();
+    const { selectedMemo } = await inquirer.prompt([
+      // 2. プロンプトで選択
+      {
+        type: "list",
+        name: "selectedMemo",
+        message: "Choose a note you want to see:",
+        choices: memos.map((memo, index) => ({
+          // 3. 選択肢を生成
+          name: `${index + 1}: ${memo.content.split("\n")[0]}`, // メモの最初の行を表示,番号を追加
+          value: index, // 選択したメモのインデックスを返す
+        })),
+      },
+    ]);
+    const memoContent = this.manager.getMemo(selectedMemo);
+    console.log(`Full memo:\n${memoContent}`); // 4. 選択されたメモの全文を表示
+  }
+
+  async deleteMemo() {
+    const memos = this.getMemos();
+    const { selectedMemo } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "selectedMemo",
+        message: "Choose a memo you want to delete:",
+        choices: memos.map((memo, index) => ({
+          name: `${index + 1}: ${memo.content.split("\n")[0]}`, // メモの最初の行を表示
+          value: index, // 選択したメモのインデックスを返す
+        })),
+      },
+    ]);
+    this.manager.deleteMemo(selectedMemo); // インデックスを渡す
+    console.log("Memo deleted.");
   }
 }
