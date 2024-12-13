@@ -17,11 +17,12 @@ export class MemoApp {
     if (args.length > 1) {
       console.log("Error: Only one option is allowed at a time.");
       console.log("Usage: memo.js -l | -r | -d");
-      process.exit();
+      process.exit(1);
     }
 
     if (args.includes("-l")) {
       this.listMemos();
+      process.exit(0);
     } else if (args.includes("-r")) {
       await this.viewMemo();
     } else if (args.includes("-d")) {
@@ -30,22 +31,25 @@ export class MemoApp {
       await this.askForMemoContent();
     } else {
       console.log("Usage: memo.js -l | -r | -d");
+      process.exit(1);
     }
   }
 
-  askForMemoContent() {
+  async askForMemoContent() {
     console.log("Enter your memo (type 'EOF' on a new line to finish):");
 
     let content = "";
-    this.rl.on("line", (line) => {
-      if (line === "EOF") {
-        this.rl.close();
-        this.manager.addMemo(content.trim());
-        console.log("Memo added.");
-        process.exit();
-      } else {
-        content += line + "\n";
-      }
+    return new Promise((resolve) => {
+      this.rl.on("line", (line) => {
+        if (line === "EOF") {
+          this.rl.close();
+          this.manager.addMemo(content.trim());
+          console.log("Memo added.");
+          resolve();
+        } else {
+          content += line + "\n";
+        }
+      });
     });
   }
 
@@ -53,7 +57,7 @@ export class MemoApp {
     const memos = this.manager.listMemos();
     if (memos.length === 0) {
       console.log("No memos available.");
-      process.exit();
+      return;
     }
     memos.forEach((memo, index) => {
       console.log(`${index + 1}: ${memo.content.split("\n")[0]}`);
@@ -66,7 +70,7 @@ export class MemoApp {
     const memos = this.manager.listMemos();
     if (memos.length === 0) {
       console.log("No memos available to view.");
-      process.exit();
+      process.exit(1);
     }
 
     const { selectedMemo } = await inquirer.prompt([
@@ -88,7 +92,7 @@ export class MemoApp {
     const memos = this.manager.listMemos();
     if (memos.length === 0) {
       console.log("No memos available to delete.");
-      process.exit();
+      process.exit(1);
     }
 
     const { selectedMemo } = await inquirer.prompt([
