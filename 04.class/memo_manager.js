@@ -20,10 +20,6 @@ export class MemoManager {
     this.storage.save(this.memos);
   }
 
-  getMemo(content) {
-    return this.memos.find((memo) => memo.content === content);
-  }
-
   deleteMemo(index) {
     if (this.memos[index]) {
       this.memos.splice(index, 1);
