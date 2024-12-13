@@ -42,12 +42,8 @@ export class MemoApp {
     });
   }
 
-  getMemos() {
-    return this.manager.listMemos();
-  }
-
   listMemos() {
-    const memos = this.getMemos();
+    const memos = this.manager.listMemos();
     if (memos.length === 0) {
       console.log("No memos available.");
       process.exit();
@@ -60,7 +56,7 @@ export class MemoApp {
   }
 
   async viewMemo() {
-    const memos = this.getMemos();
+    const memos = this.manager.listMemos();
     const { selectedMemo } = await inquirer.prompt([
       {
         type: "list",
@@ -77,7 +73,7 @@ export class MemoApp {
   }
 
   async deleteMemo() {
-    const memos = this.getMemos();
+    const memos = this.manager.listMemos();
     const { selectedMemo } = await inquirer.prompt([
       {
         type: "list",
