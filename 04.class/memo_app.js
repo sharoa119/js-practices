@@ -1,10 +1,10 @@
 import inquirer from "inquirer";
-import readline from "readline"; // readlineモジュールをインポート
-import { MemoManager } from "./memo_manager.js"; // メモ管理ロジックをインポート
+import readline from "readline";
+import { MemoManager } from "./memo_manager.js";
 
 export class MemoApp {
   constructor() {
-    this.manager = new MemoManager(); // MemoManagerインスタンスを初期化
+    this.manager = new MemoManager();
     this.rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
@@ -12,7 +12,7 @@ export class MemoApp {
   }
 
   async start() {
-    const args = process.argv.slice(2); // コマンドライン引数を取得
+    const args = process.argv.slice(2);
 
     if (args.includes("-l")) {
       this.listMemos();
@@ -21,7 +21,7 @@ export class MemoApp {
     } else if (args.includes("-d")) {
       await this.deleteMemo();
     } else if (args.length === 0) {
-      await this.askForMemoContent(); // 標準入力を受け付けてメモを追加
+      await this.askForMemoContent();
     } else {
       console.log("Usage: memo.js -l | -r | -d");
     }
@@ -34,51 +34,44 @@ export class MemoApp {
     this.rl.on("line", (line) => {
       if (line === "EOF") {
         this.rl.close();
-        this.manager.addMemo(content.trim()); // 改行を含むメモを保存
+        this.manager.addMemo(content.trim());
         console.log("Memo added.");
       } else {
-        content += line + "\n"; // 改行を追加
+        content += line + "\n";
       }
     });
   }
 
   getMemos() {
-    return this.manager.listMemos(); // MemoManager からメモ一覧を取得
+    return this.manager.listMemos();
   }
 
   listMemos() {
     const memos = this.getMemos();
-    // console.log("Debug: memos =", memos); // デバッグ用
     if (memos.length === 0) {
       console.log("No memos available.");
-      process.exit(); // 終了
+      process.exit();
     }
-    // メモを一覧表示
     memos.forEach((memo, index) => {
-      console.log(`${index + 1}: ${memo.content.split("\n")[0]}`); // 最初の行を表示
+      console.log(`${index + 1}: ${memo.content.split("\n")[0]}`);
     });
 
-    process.exit(); // 表示後に終了
+    process.exit();
   }
 
   async viewMemo() {
     const memos = this.getMemos();
     const { selectedMemo } = await inquirer.prompt([
-      // 2. プロンプトで選択
       {
         type: "list",
         name: "selectedMemo",
         message: "Choose a note you want to see:",
         choices: memos.map((memo, index) => ({
-          // 3. 選択肢を生成
-          name: `${index + 1}: ${memo.content.split("\n")[0]}`, // メモの最初の行を表示,番号を追加
-          value: memo, // メモそのものを渡す
+          name: `${index + 1}: ${memo.content.split("\n")[0]}`,
+          value: memo,
         })),
       },
     ]);
-    // const memoContent = this.manager.getMemo(selectedMemo);
-    // console.log(`Full memo:\n${memoContent}`); // 4. 選択されたメモの全文を表示
-    // 選択したメモを表示
     console.log("Full memo:");
     console.log(selectedMemo.content);
   }
@@ -91,12 +84,12 @@ export class MemoApp {
         name: "selectedMemo",
         message: "Choose a memo you want to delete:",
         choices: memos.map((memo, index) => ({
-          name: `${index + 1}: ${memo.content.split("\n")[0]}`, // メモの最初の行を表示
-          value: index, // 選択したメモのインデックスを返す
+          name: `${index + 1}: ${memo.content.split("\n")[0]}`,
+          value: index,
         })),
       },
     ]);
-    this.manager.deleteMemo(selectedMemo); // インデックスを渡す
+    this.manager.deleteMemo(selectedMemo);
     console.log("Memo deleted.");
   }
 }
