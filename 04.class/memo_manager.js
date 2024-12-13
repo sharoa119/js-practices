@@ -9,7 +9,7 @@ export class MemoManager {
 
   // メモの一覧表示（最初の行だけ）
   listMemos() {
-    return this.memos.map((memo) => memo.content.split("\n")[0]);
+    return this.memos; // 全てのメモをそのまま返す
   }
 
   // メモを追加（標準入力で内容を受け取る）
