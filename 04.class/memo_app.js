@@ -36,6 +36,7 @@ export class MemoApp {
         this.rl.close();
         this.manager.addMemo(content.trim());
         console.log("Memo added.");
+        process.exit();
       } else {
         content += line + "\n";
       }
