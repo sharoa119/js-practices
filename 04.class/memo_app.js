@@ -48,10 +48,17 @@ export class MemoApp {
 
   listMemos() {
     const memos = this.getMemos();
+    // console.log("Debug: memos =", memos); // デバッグ用
+    if (memos.length === 0) {
+      console.log("No memos available.");
+      process.exit(); // 終了
+    }
+    // メモを一覧表示
     memos.forEach((memo, index) => {
-      // 2. メモを一つずつ処理
-      console.log(`${index + 1}: ${memo.content.split("\n")[0]}`); // 3. 表示
+      console.log(`${index + 1}: ${memo.content.split("\n")[0]}`); // 最初の行を表示
     });
+
+    process.exit(); // 表示後に終了
   }
 
   async viewMemo() {
@@ -65,12 +72,15 @@ export class MemoApp {
         choices: memos.map((memo, index) => ({
           // 3. 選択肢を生成
           name: `${index + 1}: ${memo.content.split("\n")[0]}`, // メモの最初の行を表示,番号を追加
-          value: index, // 選択したメモのインデックスを返す
+          value: memo, // メモそのものを渡す
         })),
       },
     ]);
-    const memoContent = this.manager.getMemo(selectedMemo);
-    console.log(`Full memo:\n${memoContent}`); // 4. 選択されたメモの全文を表示
+    // const memoContent = this.manager.getMemo(selectedMemo);
+    // console.log(`Full memo:\n${memoContent}`); // 4. 選択されたメモの全文を表示
+    // 選択したメモを表示
+    console.log("Full memo:");
+    console.log(selectedMemo.content);
   }
 
   async deleteMemo() {
