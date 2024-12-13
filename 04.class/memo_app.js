@@ -58,6 +58,11 @@ export class MemoApp {
 
   async viewMemo() {
     const memos = this.manager.listMemos();
+    if (memos.length === 0) {
+      console.log("No memos available to view.");
+      process.exit();
+    }
+
     const { selectedMemo } = await inquirer.prompt([
       {
         type: "list",
@@ -75,6 +80,11 @@ export class MemoApp {
 
   async deleteMemo() {
     const memos = this.manager.listMemos();
+    if (memos.length === 0) {
+      console.log("No memos available to delete.");
+      process.exit();
+    }
+
     const { selectedMemo } = await inquirer.prompt([
       {
         type: "list",
