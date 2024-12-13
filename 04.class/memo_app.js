@@ -14,6 +14,12 @@ export class MemoApp {
   async start() {
     const args = process.argv.slice(2);
 
+    if (args.length > 1) {
+      console.log("Error: Only one option is allowed at a time.");
+      console.log("Usage: memo.js -l | -r | -d");
+      process.exit();
+    }
+
     if (args.includes("-l")) {
       this.listMemos();
     } else if (args.includes("-r")) {
