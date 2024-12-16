@@ -3,27 +3,28 @@ import { MemoStorage } from "./memo_storage.js";
 export class MemoManager {
   constructor() {
     this.storage = new MemoStorage();
-    this.memos = this.storage.load() || [];
   }
 
-  listMemos() {
-    return this.memos;
+  async listMemos() {
+    const memos = await this.storage.load();
+    return memos;
   }
 
-  addMemo(content) {
+  async addMemo(content) {
     if (!content || content.trim().length === 0) {
       console.error("Memo content cannot be empty.");
       return;
     }
     const newMemo = { content };
-    this.memos.push(newMemo);
-    this.storage.save(this.memos);
+    const memos = await this.storage.load();
+    this.storage.save([...memos, newMemo]);
   }
 
-  deleteMemo(index) {
-    if (this.memos[index]) {
-      this.memos.splice(index, 1);
-      this.storage.save(this.memos);
+  async deleteMemo(index) {
+    const memos = await this.storage.load();
+    if (memos[index]) {
+      memos.splice(index, 1);
+      this.storage.save(memos);
     }
   }
 }

@@ -21,7 +21,7 @@ export class MemoApp {
     }
 
     if (args.includes("-l")) {
-      this.listMemos();
+      await this.listMemos();
       process.exit(0);
     } else if (args.includes("-r")) {
       await this.viewMemo();
@@ -53,8 +53,8 @@ export class MemoApp {
     });
   }
 
-  listMemos() {
-    const memos = this.manager.listMemos();
+  async listMemos() {
+    const memos = await this.manager.listMemos();
     if (memos.length === 0) {
       console.log("No memos available.");
       return;
@@ -67,7 +67,7 @@ export class MemoApp {
   }
 
   async viewMemo() {
-    const memos = this.manager.listMemos();
+    const memos = await this.manager.listMemos();
     if (memos.length === 0) {
       console.log("No memos available to view.");
       process.exit(1);
@@ -89,7 +89,7 @@ export class MemoApp {
   }
 
   async deleteMemo() {
-    const memos = this.manager.listMemos();
+    const memos = await this.manager.listMemos();
     if (memos.length === 0) {
       console.log("No memos available to delete.");
       process.exit(1);
