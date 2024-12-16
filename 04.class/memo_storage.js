@@ -1,27 +1,31 @@
-import fs from "fs";
+import { promises as fs } from "fs";
 
 export class MemoStorage {
   constructor(filename = "memos.json") {
     this.filename = filename;
   }
 
-  load() {
+  async load() {
     try {
-      const data = fs.readFileSync(this.filename, "utf-8");
+      const data = await fs.readFile(this.filename, "utf-8");
       return JSON.parse(data);
     } catch (error) {
       if (error.code === "ENOENT") {
-        console.log(`${this.filename} が見つかりません。新規作成します。`);
-        this.save([]);
+        console.log(`${this.filename} not found. Creating a new file.`);
+        await this.save([]);
         return [];
       } else {
-        console.error("ファイル読み込み時にエラーが発生しました:", error);
+        console.error("Error occurred while loading the file:", error);
         return [];
       }
     }
   }
 
-  save(data) {
-    fs.writeFileSync(this.filename, JSON.stringify(data));
+  async save(data) {
+    try {
+      await fs.writeFile(this.filename, JSON.stringify(data));
+    } catch (error) {
+      console.error("Error occurred while saving the file:", error);
+    }
   }
 }
