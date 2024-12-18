@@ -5,10 +5,6 @@ import { MemoManager } from "./memo_manager.js";
 export class MemoApp {
   constructor() {
     this.manager = new MemoManager();
-    this.rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
   }
 
   async start() {
@@ -20,36 +16,53 @@ export class MemoApp {
       process.exit(1);
     }
 
-    if (args.includes("-l")) {
-      await this.listMemos();
-      process.exit(0);
-    } else if (args.includes("-r")) {
-      await this.viewMemo();
-    } else if (args.includes("-d")) {
-      await this.deleteMemo();
-    } else if (args.length === 0) {
-      await this.askForMemoContent();
-    } else {
-      console.log("Usage: memo.js -l | -r | -d");
-      process.exit(1);
+    try {
+      if (args.includes("-l")) {
+        await this.listMemos();
+      } else if (args.includes("-r")) {
+        await this.viewMemo();
+      } else if (args.includes("-d")) {
+        await this.deleteMemo();
+      } else if (args.length === 0) {
+        await this.askForMemoContent();
+      } else {
+        console.log("Usage: memo.js -l | -r | -d");
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
     }
   }
 
   async askForMemoContent() {
     console.log("Enter your memo (type 'EOF' on a new line to finish):");
 
-    let content = "";
+    const content = await this.collectMemoContent();
+    if (content.trim().length === 0) {
+      console.log("Empty memo. Nothing was saved.");
+      return;
+    }
+
+    await this.manager.addMemo(content.trim());
+    console.log("Memo added.");
+  }
+
+  collectMemoContent() {
     return new Promise((resolve) => {
-      this.rl.on("line", (line) => {
-        if (line === "EOF") {
-          this.rl.close();
-          this.manager.addMemo(content.trim());
-          console.log("Memo added.");
-          resolve();
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
+
+      let content = "";
+      rl.on("line", (line) => {
+        if (line.toUpperCase().trim() === "EOF") {
+          rl.close();
         } else {
           content += line + "\n";
         }
       });
+
+      rl.on("close", () => resolve(content));
     });
   }
 
@@ -62,15 +75,13 @@ export class MemoApp {
     memos.forEach((memo, index) => {
       console.log(`${index + 1}: ${memo.content.split("\n")[0]}`);
     });
-
-    process.exit();
   }
 
   async viewMemo() {
     const memos = await this.manager.listMemos();
     if (memos.length === 0) {
       console.log("No memos available to view.");
-      process.exit(1);
+      return;
     }
 
     const { selectedMemo } = await inquirer.prompt([
@@ -92,7 +103,7 @@ export class MemoApp {
     const memos = await this.manager.listMemos();
     if (memos.length === 0) {
       console.log("No memos available to delete.");
-      process.exit(1);
+      return;
     }
 
     const { selectedMemo } = await inquirer.prompt([
