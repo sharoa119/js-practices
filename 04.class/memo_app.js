@@ -34,7 +34,7 @@ export class MemoApp {
   }
 
   async addMemo() {
-    console.log("Enter your memo (type 'EOF' on a new line to finish):");
+    console.log("Enter your memo (type 'exit' on a new line to finish):");
 
     const content = await this.readMemoContent();
     if (content.trim().length === 0) {
@@ -55,7 +55,7 @@ export class MemoApp {
 
       let content = "";
       rl.on("line", (line) => {
-        if (line.toUpperCase().trim() === "EOF") {
+        if (line.trim().toLowerCase() === "exit") {
           rl.close();
         } else {
           content += line + "\n";
