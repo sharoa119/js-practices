@@ -24,7 +24,7 @@ export class MemoApp {
       } else if (args.includes("-d")) {
         await this.deleteMemo();
       } else if (args.length === 0) {
-        await this.askForMemoContent();
+        await this.addMemo();
       } else {
         console.log("Usage: memo.js -l | -r | -d");
       }
@@ -33,10 +33,10 @@ export class MemoApp {
     }
   }
 
-  async askForMemoContent() {
+  async addMemo() {
     console.log("Enter your memo (type 'EOF' on a new line to finish):");
 
-    const content = await this.collectMemoContent();
+    const content = await this.readMemoContent();
     if (content.trim().length === 0) {
       console.log("Empty memo. Nothing was saved.");
       return;
@@ -46,7 +46,7 @@ export class MemoApp {
     console.log("Memo added.");
   }
 
-  collectMemoContent() {
+  readMemoContent() {
     return new Promise((resolve) => {
       const rl = readline.createInterface({
         input: process.stdin,
