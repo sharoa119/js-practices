@@ -73,10 +73,10 @@ export class MemoApp {
       return;
     }
 
-    const { selectedMemo } = await inquirer.prompt([
+    const { selectedIndex } = await inquirer.prompt([
       {
         type: "list",
-        name: "selectedMemo",
+        name: "selectedIndex",
         message: "Choose a memo you want to delete:",
         choices: memos.map((memo, index) => ({
           name: `${index + 1}: ${memo.content.split("\n")[0]}`,
@@ -84,7 +84,7 @@ export class MemoApp {
         })),
       },
     ]);
-    this.manager.deleteMemo(selectedMemo);
+    this.manager.deleteMemo(selectedIndex);
     console.log("Memo deleted.");
   }
 
