@@ -98,22 +98,22 @@ export class MemoApp {
     }
 
     await this.manager.addMemo(content.trim());
-    console.log("Memo added.");
+    console.log("Added a memo.");
   }
 
   #readMemoContent() {
     return new Promise((resolve) => {
       const rl = readline.createInterface({
         input: process.stdin,
-        output: process.stdout,
+        output: null,
       });
 
-      let content = "";
+      const lines = [];
       rl.on("line", (line) => {
-        content += line + "\n";
+        lines.push(line);
       });
 
-      rl.on("close", () => resolve(content));
+      rl.on("close", () => resolve(lines.join("\n")));
     });
   }
 }
