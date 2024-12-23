@@ -97,8 +97,6 @@ export class MemoApp {
       return;
     }
 
-    // await this.manager.addMemo(content.trim());
-    // console.log("Added a memo.");
     try {
       await this.manager.addMemo(content.trim());
       console.log("Added a memo.");
