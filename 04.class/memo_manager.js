@@ -12,12 +12,13 @@ export class MemoManager {
 
   async addMemo(content) {
     if (!content || content.trim().length === 0) {
-      console.error("Memo content cannot be empty.");
-      return;
+      throw new Error("Memo content cannot be empty.");
     }
     const newMemo = { content };
     const memos = await this.storage.load();
     this.storage.save([...memos, newMemo]);
+
+    return true;
   }
 
   async deleteMemo(index) {

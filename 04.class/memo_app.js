@@ -97,8 +97,14 @@ export class MemoApp {
       return;
     }
 
-    await this.manager.addMemo(content.trim());
-    console.log("Added a memo.");
+    // await this.manager.addMemo(content.trim());
+    // console.log("Added a memo.");
+    try {
+      await this.manager.addMemo(content.trim());
+      console.log("Added a memo.");
+    } catch (error) {
+      console.error("Failed to add memo:", error.message);
+    }
   }
 
   #readMemoContent() {
