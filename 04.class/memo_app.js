@@ -18,13 +18,13 @@ export class MemoApp {
 
     try {
       if (args.includes("-l")) {
-        await this.listMemos();
+        await this.#listMemos();
       } else if (args.includes("-r")) {
-        await this.viewMemo();
+        await this.#viewMemo();
       } else if (args.includes("-d")) {
-        await this.deleteMemo();
+        await this.#deleteMemo();
       } else if (args.length === 0) {
-        await this.addMemo();
+        await this.#addMemo();
       } else {
         console.log("Usage: memo.js -l | -r | -d");
       }
@@ -33,36 +33,7 @@ export class MemoApp {
     }
   }
 
-  async addMemo() {
-    console.log("Enter your memo (press Ctrl+D to finish):");
-
-    const content = await this.readMemoContent();
-    if (content.trim().length === 0) {
-      console.log("Empty memo. Nothing was saved.");
-      return;
-    }
-
-    await this.manager.addMemo(content.trim());
-    console.log("Memo added.");
-  }
-
-  readMemoContent() {
-    return new Promise((resolve) => {
-      const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-      });
-
-      let content = "";
-      rl.on("line", (line) => {
-        content += line + "\n";
-      });
-
-      rl.on("close", () => resolve(content));
-    });
-  }
-
-  async listMemos() {
+  async #listMemos() {
     const memos = await this.manager.listMemos();
     if (memos.length === 0) {
       console.log("No memos available.");
@@ -73,7 +44,7 @@ export class MemoApp {
     });
   }
 
-  async viewMemo() {
+  async #viewMemo() {
     const memos = await this.manager.listMemos();
     if (memos.length === 0) {
       console.log("No memos available to view.");
@@ -95,7 +66,7 @@ export class MemoApp {
     console.log(selectedMemo.content);
   }
 
-  async deleteMemo() {
+  async #deleteMemo() {
     const memos = await this.manager.listMemos();
     if (memos.length === 0) {
       console.log("No memos available to delete.");
@@ -115,5 +86,34 @@ export class MemoApp {
     ]);
     this.manager.deleteMemo(selectedMemo);
     console.log("Memo deleted.");
+  }
+
+  async #addMemo() {
+    console.log("Enter your memo (press Ctrl+D to finish):");
+
+    const content = await this.#readMemoContent();
+    if (content.trim().length === 0) {
+      console.log("Empty memo. Nothing was saved.");
+      return;
+    }
+
+    await this.manager.addMemo(content.trim());
+    console.log("Memo added.");
+  }
+
+  #readMemoContent() {
+    return new Promise((resolve) => {
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
+
+      let content = "";
+      rl.on("line", (line) => {
+        content += line + "\n";
+      });
+
+      rl.on("close", () => resolve(content));
+    });
   }
 }
