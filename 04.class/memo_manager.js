@@ -21,10 +21,10 @@ export class MemoManager {
     return true;
   }
 
-  async deleteMemo(index) {
+  async deleteMemo(content) {
     const memos = await this.storage.load();
-    if (memos[index]) {
-      memos.splice(index, 1);
+    if (memos[content]) {
+      memos.splice(content, 1);
       this.storage.save(memos);
     }
   }
