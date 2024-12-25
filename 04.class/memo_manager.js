@@ -6,8 +6,11 @@ export class MemoManager {
   }
 
   async listMemos() {
-    const memos = await this.storage.load();
-    return memos;
+    try {
+      return await this.storage.load();
+    } catch (error) {
+      throw new Error("Failed to load memos: " + error.message);
+    }
   }
 
   async addMemo(content) {
@@ -16,16 +19,15 @@ export class MemoManager {
     }
     const newMemo = { content };
     const memos = await this.storage.load();
-    this.storage.save([...memos, newMemo]);
-
-    return true;
+    await this.storage.save([...memos, newMemo]);
   }
 
   async deleteMemo(content) {
     const memos = await this.storage.load();
-    if (memos[content]) {
-      memos.splice(content, 1);
-      this.storage.save(memos);
+    const updatedMemos = memos.filter((memo) => memo.content !== content);
+    if (memos.length === updatedMemos.length) {
+      throw new Error("Memo not found.");
     }
+    await this.storage.save(updatedMemos);
   }
 }
