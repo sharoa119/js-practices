@@ -5,6 +5,10 @@ import { MemoManager } from "./memo_manager.js";
 export class MemoApp {
   constructor() {
     this.manager = new MemoManager();
+    process.on("SIGINT", () => {
+      console.log("\nOperation cancelled. Exiting...");
+      process.exit(0);
+    });
   }
 
   async start() {
@@ -34,70 +38,92 @@ export class MemoApp {
   }
 
   async #listMemos() {
-    const memos = await this.manager.listMemos();
-    if (memos.length === 0) {
-      console.log("No memos available.");
-      return;
+    try {
+      const memos = await this.manager.listMemos();
+      if (memos.length === 0) {
+        console.log("No memos available.");
+        return;
+      }
+      memos.forEach((memo, index) => {
+        console.log(`${index + 1}: ${memo.content.split("\n")[0]}`);
+      });
+    } catch (error) {
+      console.error("Failed to list memos:", error.message);
     }
-    memos.forEach((memo, index) => {
-      console.log(`${index + 1}: ${memo.content.split("\n")[0]}`);
-    });
   }
 
   async #viewMemo() {
-    const memos = await this.manager.listMemos();
-    if (memos.length === 0) {
-      console.log("No memos available to view.");
-      return;
-    }
+    try {
+      const memos = await this.manager.listMemos();
+      if (memos.length === 0) {
+        console.log("No memos available to view.");
+        return;
+      }
 
-    const { selectedMemo } = await inquirer.prompt([
-      {
-        type: "list",
-        name: "selectedMemo",
-        message: "Choose a note you want to see:",
-        choices: memos.map((memo, index) => ({
-          name: `${index + 1}: ${memo.content.split("\n")[0]}`,
-          value: memo,
-        })),
-      },
-    ]);
-    console.log("Full memo:");
-    console.log(selectedMemo.content);
+      const { selectedMemo } = await inquirer.prompt([
+        {
+          type: "list",
+          name: "selectedMemo",
+          message: "Choose a note you want to see:",
+          choices: memos.map((memo, index) => ({
+            name: `${index + 1}: ${memo.content.split("\n")[0]}`,
+            value: memo,
+          })),
+        },
+      ]);
+
+      console.log("Full memo:");
+      console.log(selectedMemo.content);
+    } catch (error) {
+      if (error.message.includes("User force closed the prompt")) {
+        console.log("\nOperation cancelled. Exiting...");
+        process.exit(0);
+      }
+      console.error("Failed to view memo:", error.message);
+    }
   }
 
   async #deleteMemo() {
-    const memos = await this.manager.listMemos();
-    if (memos.length === 0) {
-      console.log("No memos available to delete.");
-      return;
-    }
+    try {
+      const memos = await this.manager.listMemos();
+      if (memos.length === 0) {
+        console.log("No memos available to delete.");
+        return;
+      }
 
-    const { selectedIndex } = await inquirer.prompt([
-      {
-        type: "list",
-        name: "selectedIndex",
-        message: "Choose a memo you want to delete:",
-        choices: memos.map((memo, index) => ({
-          name: `${index + 1}: ${memo.content.split("\n")[0]}`,
-          value: index,
-        })),
-      },
-    ]);
-    this.manager.deleteMemo(selectedIndex);
-    console.log("Memo deleted.");
+      const { selectedMemo } = await inquirer.prompt([
+        {
+          type: "list",
+          name: "selectedMemo",
+          message: "Choose a memo you want to delete:",
+          choices: memos.map((memo) => ({
+            name: memo.content.split("\n")[0],
+            value: memo.content,
+          })),
+        },
+      ]);
+
+      await this.manager.deleteMemo(selectedMemo);
+      console.log("Memo deleted.");
+    } catch (error) {
+      if (error.message.includes("User force closed the prompt")) {
+        console.log("\nOperation cancelled. Exiting...");
+        process.exit(0);
+      }
+      console.error("Failed to delete memo:", error.message);
+    }
   }
 
   async #addMemo() {
     console.log("Enter your memo (press Ctrl+D to finish):");
 
-    const content = await this.#readMemoContent();
-    if (content.trim().length === 0) {
-      console.log("Empty memo. Nothing was saved.");
-      return;
-    }
-
     try {
+      const content = await this.#readMemoContent();
+      if (content.trim().length === 0) {
+        console.log("Empty memo. Nothing was saved.");
+        return;
+      }
+
       await this.manager.addMemo(content.trim());
       console.log("Added a memo.");
     } catch (error) {
@@ -106,7 +132,7 @@ export class MemoApp {
   }
 
   #readMemoContent() {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const rl = readline.createInterface({
         input: process.stdin,
         output: null,
@@ -118,6 +144,10 @@ export class MemoApp {
       });
 
       rl.on("close", () => resolve(lines.join("\n")));
+
+      rl.on("error", (error) => {
+        reject(error);
+      });
     });
   }
 }
