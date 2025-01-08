@@ -62,7 +62,7 @@ export class MemoApp {
         {
           type: "list",
           name: "selectedMemo",
-          message: "Choose a note you want to see:",
+          message: "Choose a memo you want to see:",
           choices: memos.map((memo, index) => ({
             name: `${index + 1}: ${memo.content.split("\n")[0]}`,
             value: memo,
@@ -102,7 +102,7 @@ export class MemoApp {
       ]);
 
       await this.manager.deleteMemo(selectedMemo);
-      console.log("Memo deleted.");
+      console.log("Deleted a memo.");
     } catch (error) {
       if (error.message.includes("User force closed the prompt")) {
         console.log("\nOperation cancelled. Exiting...");
