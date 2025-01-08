@@ -7,7 +7,7 @@ export class MemoApp {
     this.manager = new MemoManager();
     process.on("SIGINT", () => {
       console.log("\nOperation cancelled. Exiting...");
-      process.exit(0);
+      process.exit(1);
     });
   }
 
@@ -29,8 +29,6 @@ export class MemoApp {
         await this.#deleteMemo();
       } else if (args.length === 0) {
         await this.#addMemo();
-      } else {
-        console.log("Usage: memo.js -l | -r | -d");
       }
     } catch (error) {
       console.error("An error occurred:", error);
@@ -135,7 +133,6 @@ export class MemoApp {
     return new Promise((resolve, reject) => {
       const rl = readline.createInterface({
         input: process.stdin,
-        output: null,
       });
 
       const lines = [];
