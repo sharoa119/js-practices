@@ -15,18 +15,12 @@ export class MemoStorage {
         await this.save([]);
         return [];
       } else {
-        console.error("Error occurred while loading the file:", error);
         throw error;
       }
     }
   }
 
   async save(data) {
-    try {
-      await fs.writeFile(this.filename, JSON.stringify(data));
-    } catch (error) {
-      console.error("Error occurred while saving the file:", error);
-      throw error;
-    }
+    await fs.writeFile(this.filename, JSON.stringify(data));
   }
 }
