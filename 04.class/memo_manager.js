@@ -9,7 +9,7 @@ export class MemoManager {
     try {
       return await this.storage.load();
     } catch (error) {
-      throw new Error("Failed to load memos: " + error.message);
+      throw new Error(`Failed to load memos: ${error.message}`);
     }
   }
 
@@ -22,12 +22,14 @@ export class MemoManager {
     await this.storage.save([...memos, newMemo]);
   }
 
-  async deleteMemo(content) {
+  async deleteMemo(index) {
     const memos = await this.storage.load();
-    const updatedMemos = memos.filter((memo) => memo.content !== content);
-    if (memos.length === updatedMemos.length) {
-      throw new Error("Memo not found.");
+
+    if (index < 0 || index >= memos.length) {
+      throw new Error("Invalid index.");
     }
-    await this.storage.save(updatedMemos);
+
+    memos.splice(index, 1);
+    await this.storage.save(memos);
   }
 }

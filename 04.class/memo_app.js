@@ -135,8 +135,7 @@ export class MemoApp {
     }
 
     try {
-      const selectedMemo = memos[selectedMemoIndex];
-      await this.#manager.deleteMemo(selectedMemo.content);
+      await this.#manager.deleteMemo(selectedMemoIndex);
     } catch (error) {
       console.error("Failed to delete memo:", error.message);
       return;
