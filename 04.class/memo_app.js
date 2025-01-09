@@ -3,8 +3,10 @@ import readline from "readline";
 import { MemoManager } from "./memo_manager.js";
 
 export class MemoApp {
+  #manager; // プライベートフィールドとして宣言
+
   constructor() {
-    this.manager = new MemoManager();
+    this.#manager = new MemoManager();
     process.on("SIGINT", () => {
       console.log("\nOperation cancelled. Exiting...");
       process.exit(1);
@@ -52,7 +54,7 @@ export class MemoApp {
 
   async #viewMemo() {
     try {
-      const memos = await this.manager.listMemos();
+      const memos = await this.#manager.listMemos();
       if (memos.length === 0) {
         console.log("No memos available to view.");
         return;
@@ -83,7 +85,7 @@ export class MemoApp {
 
   async #deleteMemo() {
     try {
-      const memos = await this.manager.listMemos();
+      const memos = await this.#manager.listMemos();
       if (memos.length === 0) {
         console.log("No memos available to delete.");
         return;
@@ -122,7 +124,7 @@ export class MemoApp {
         return;
       }
 
-      await this.manager.addMemo(content.trim());
+      await this.#manager.addMemo(content.trim());
       console.log("Added a memo.");
     } catch (error) {
       console.error("Failed to add memo:", error.message);
