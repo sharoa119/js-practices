@@ -3,7 +3,7 @@ import readline from "readline";
 import { MemoManager } from "./memo_manager.js";
 
 export class MemoApp {
-  #manager; // プライベートフィールドとして宣言
+  #manager;
 
   constructor() {
     this.#manager = new MemoManager();
@@ -97,7 +97,7 @@ export class MemoApp {
           name: "selectedMemo",
           message: "Choose a memo you want to delete:",
           choices: memos.map((memo, index) => ({
-            name: `${index + 1}: ${memo.content.split("\n")[0]}`, // インデックス付きに変更
+            name: `${index + 1}: ${memo.content.split("\n")[0]}`,
             value: memo.content,
           })),
         },
