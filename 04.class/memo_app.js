@@ -115,7 +115,9 @@ export class MemoApp {
   }
 
   async #addMemo() {
+    if (process.stdin.isTTY) {
     console.log("Enter your memo (press Ctrl+D to finish):");
+    }
 
     try {
       const content = await this.#readMemoContent();
