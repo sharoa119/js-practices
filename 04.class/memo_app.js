@@ -72,7 +72,6 @@ export class MemoApp {
         },
       ]);
 
-      console.log("Full memo:");
       console.log(selectedMemo.content);
     } catch (error) {
       if (error.message.includes("User force closed the prompt")) {
@@ -103,7 +102,7 @@ export class MemoApp {
         },
       ]);
 
-      await this.manager.deleteMemo(selectedMemo);
+      await this.#manager.deleteMemo(selectedMemo);
       console.log("Deleted a memo.");
     } catch (error) {
       if (error.message.includes("User force closed the prompt")) {
@@ -144,7 +143,9 @@ export class MemoApp {
         lines.push(line);
       });
 
-      rl.on("close", () => resolve(lines.join("\n")));
+      rl.on("close", () => {
+        resolve(lines.join("\n"));
+      });
 
       rl.on("error", (error) => {
         reject(error);
