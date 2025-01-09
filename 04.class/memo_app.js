@@ -94,8 +94,8 @@ export class MemoApp {
           type: "list",
           name: "selectedMemo",
           message: "Choose a memo you want to delete:",
-          choices: memos.map((memo) => ({
-            name: memo.content.split("\n")[0],
+          choices: memos.map((memo, index) => ({
+            name: `${index + 1}: ${memo.content.split("\n")[0]}`, // インデックス付きに変更
             value: memo.content,
           })),
         },
