@@ -48,8 +48,7 @@ export class MemoApp {
     }
 
     if (memos.length === 0) {
-      console.log("No memos available.");
-      return;
+      this.#exitProgram(0, "No memos available.");
     }
     memos.forEach((memo, index) => {
       console.log(`${index + 1}: ${memo.content.split("\n")[0]}`);
@@ -66,8 +65,7 @@ export class MemoApp {
       return;
     }
     if (memos.length === 0) {
-      console.log("No memos available to view.");
-      return;
+      this.#exitProgram(1, "No memos available to view.");
     }
 
     let selectedMemo;
@@ -86,11 +84,10 @@ export class MemoApp {
       ]);
       selectedMemo = response.selectedMemo;
     } catch (error) {
-      if (error.message.includes("User force closed the prompt")) {
-        console.log("\nOperation cancelled. Exiting...");
-        process.exit(0);
+      if (error?.message?.includes("User force closed the prompt")) {
+        this.#exitProgram(1, "\nOperation cancelled by user.");
       }
-      console.error("Failed to view memo:", error.message);
+      console.error("Failed to process input:", error?.message || error);
       return;
     }
     console.log(selectedMemo.content);
@@ -106,8 +103,7 @@ export class MemoApp {
       return;
     }
     if (memos.length === 0) {
-      console.log("No memos available to delete.");
-      return;
+      this.#exitProgram(1, "No memos available to delete.");
     }
 
     let selectedMemoIndex;
@@ -127,8 +123,7 @@ export class MemoApp {
       selectedMemoIndex = response.selectedMemoIndex;
     } catch (error) {
       if (error.message.includes("User force closed the prompt")) {
-        console.log("\nOperation cancelled. Exiting...");
-        process.exit(0);
+        this.#exitProgram(1, "\nOperation cancelled by user.");
       }
       console.error("Failed to process input:", error.message);
       return;
@@ -137,8 +132,7 @@ export class MemoApp {
     try {
       await this.#manager.deleteMemo(selectedMemoIndex);
     } catch (error) {
-      console.error("Failed to delete memo:", error.message);
-      return;
+      this.#exitProgram(1, `Failed to delete memo: ${error.message}`);
     }
 
     console.log("Deleted a memo.");
@@ -189,5 +183,16 @@ export class MemoApp {
         reject(error);
       });
     });
+  }
+
+  #exitProgram(code, message = null) {
+    if (message) {
+      if (code === 0) {
+        console.log(message); // 正常終了の場合
+      } else {
+        console.error(message); // 異常終了の場合
+      }
+    }
+    process.exit(code);
   }
 }
