@@ -188,9 +188,9 @@ export class MemoApp {
   #exitProgram(code, message = null) {
     if (message) {
       if (code === 0) {
-        console.log(message); // 正常終了の場合
+        console.log(message);
       } else {
-        console.error(message); // 異常終了の場合
+        console.error(message);
       }
     }
     process.exit(code);
