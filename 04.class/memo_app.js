@@ -43,13 +43,12 @@ export class MemoApp {
     try {
       memos = await this.#manager.listMemos();
     } catch (error) {
-      console.error("Failed to retrieve memos:", error.message);
-      return;
+      this.#exitProgram(1, `Failed to retrieve memos: ${error.message}`);
     }
-
     if (memos.length === 0) {
       this.#exitProgram(0, "No memos available.");
     }
+
     memos.forEach((memo, index) => {
       console.log(`${index + 1}: ${memo.content.split("\n")[0]}`);
     });
@@ -61,8 +60,7 @@ export class MemoApp {
     try {
       memos = await this.#manager.listMemos();
     } catch (error) {
-      console.error("Failed to retrieve memos:", error.message);
-      return;
+      this.#exitProgram(1, `Failed to retrieve memos: ${error.message}`);
     }
     if (memos.length === 0) {
       this.#exitProgram(1, "No memos available to view.");
@@ -99,8 +97,7 @@ export class MemoApp {
     try {
       memos = await this.#manager.listMemos();
     } catch (error) {
-      console.error("Failed to retrieve memos:", error.message);
-      return;
+      this.#exitProgram(1, `Failed to retrieve memos: ${error.message}`);
     }
     if (memos.length === 0) {
       this.#exitProgram(1, "No memos available to delete.");
@@ -148,19 +145,17 @@ export class MemoApp {
     try {
       content = await this.#readMemoContent();
     } catch (error) {
-      console.error("Failed to read memo content:", error.message);
-      return;
+      this.#exitProgram(1, `Failed to read memo content: ${error.message}`);
     }
     if (content.trim().length === 0) {
-      console.log("Empty memo. Nothing was saved.");
-      return;
+      this.#exitProgram(0, "Empty memo. Nothing was saved.");
     }
 
     try {
       await this.#manager.addMemo(content.trim());
-      console.log("\nAdded a memo.");
+      this.#exitProgram(0, "Added a memo.");
     } catch (error) {
-      console.error("Failed to add memo:", error.message);
+      this.#exitProgram(1, `Failed to add memo: ${error.message}`);
     }
   }
 
