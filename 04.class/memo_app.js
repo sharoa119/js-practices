@@ -38,23 +38,17 @@ export class MemoApp {
   }
 
   async #listMemos() {
-    let memos;
+    const memos = await this.#retrieveMemos();
 
-    try {
-      memos = await this.#manager.listMemos();
-    } catch (error) {
-      this.#exitProgram(1, `Failed to retrieve memos: ${error.message}`);
-    }
     if (memos.length === 0) {
-      this.#exitProgram(0, "No memos available.");
+      this.#exitProgram(1, "No memos available.");
     }
-
     memos.forEach((memo, index) => {
       console.log(`${index + 1}: ${memo.content.split("\n")[0]}`);
     });
   }
 
-  async #viewMemo() {
+  async #retrieveMemos() {
     let memos;
 
     try {
@@ -62,6 +56,12 @@ export class MemoApp {
     } catch (error) {
       this.#exitProgram(1, `Failed to retrieve memos: ${error.message}`);
     }
+    return memos;
+  }
+
+  async #viewMemo() {
+    const memos = await this.#retrieveMemos();
+
     if (memos.length === 0) {
       this.#exitProgram(1, "No memos available to view.");
     }
@@ -92,13 +92,8 @@ export class MemoApp {
   }
 
   async #deleteMemo() {
-    let memos;
+    const memos = await this.#retrieveMemos();
 
-    try {
-      memos = await this.#manager.listMemos();
-    } catch (error) {
-      this.#exitProgram(1, `Failed to retrieve memos: ${error.message}`);
-    }
     if (memos.length === 0) {
       this.#exitProgram(1, "No memos available to delete.");
     }
@@ -128,11 +123,10 @@ export class MemoApp {
 
     try {
       await this.#manager.deleteMemo(selectedMemoId);
+      this.#exitProgram(0, "Deleted a memo.");
     } catch (error) {
       this.#exitProgram(1, `Failed to delete memo: ${error.message}`);
     }
-
-    console.log("Deleted a memo.");
   }
 
   async #addMemo() {
