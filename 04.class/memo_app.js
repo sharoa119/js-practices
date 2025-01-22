@@ -74,8 +74,8 @@ export class MemoApp {
           type: "list",
           name: "selectedMemo",
           message: "Choose a memo you want to see:",
-          choices: memos.map((memo, index) => ({
-            name: `${index + 1}: ${memo.content.split("\n")[0]}`,
+          choices: memos.map((memo) => ({
+            name: memo.content.split("\n")[0],
             value: memo,
           })),
         },
@@ -103,21 +103,21 @@ export class MemoApp {
       this.#exitProgram(1, "No memos available to delete.");
     }
 
-    let selectedMemoIndex;
+    let selectedMemoId;
 
     try {
       const response = await inquirer.prompt([
         {
           type: "list",
-          name: "selectedMemoIndex",
+          name: "selectedMemoId",
           message: "Choose a memo you want to delete:",
-          choices: memos.map((memo, index) => ({
-            name: `${index + 1}: ${memo.content.split("\n")[0]}`,
-            value: index,
+          choices: memos.map((memo) => ({
+            name: memo.content.split("\n")[0],
+            value: memo.id,
           })),
         },
       ]);
-      selectedMemoIndex = response.selectedMemoIndex;
+      selectedMemoId = response.selectedMemoId;
     } catch (error) {
       if (error.message.includes("User force closed the prompt")) {
         this.#exitProgram(1, "\nOperation cancelled by user.");
@@ -127,7 +127,7 @@ export class MemoApp {
     }
 
     try {
-      await this.#manager.deleteMemo(selectedMemoIndex);
+      await this.#manager.deleteMemo(selectedMemoId);
     } catch (error) {
       this.#exitProgram(1, `Failed to delete memo: ${error.message}`);
     }
@@ -153,7 +153,7 @@ export class MemoApp {
 
     try {
       await this.#manager.addMemo(content.trim());
-      this.#exitProgram(0, "Added a memo.");
+      this.#exitProgram(0, "\nAdded a memo.");
     } catch (error) {
       this.#exitProgram(1, `Failed to add memo: ${error.message}`);
     }

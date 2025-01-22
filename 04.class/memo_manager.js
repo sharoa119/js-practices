@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import { MemoStorage } from "./memo_storage.js";
 
 export class MemoManager {
@@ -17,19 +18,20 @@ export class MemoManager {
     if (!content || content.trim().length === 0) {
       throw new Error("Memo content cannot be empty.");
     }
-    const newMemo = { content };
+    const newMemo = { id: uuidv4(), content };
     const memos = await this.storage.load();
     await this.storage.save([...memos, newMemo]);
   }
 
-  async deleteMemo(index) {
+  async deleteMemo(id) {
     const memos = await this.storage.load();
 
-    if (index < 0 || index >= memos.length) {
-      throw new Error("Invalid index.");
+    const memoIndex = memos.findIndex((memo) => memo.id === id);
+    if (memoIndex === -1) {
+      throw new Error("Memo not found.");
     }
 
-    memos.splice(index, 1);
+    memos.splice(memoIndex, 1);
     await this.storage.save(memos);
   }
 }
