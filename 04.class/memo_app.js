@@ -33,7 +33,7 @@ export class MemoApp {
         await this.#addMemo();
       }
     } catch (error) {
-      console.error("An error occurred:", error);
+      this.#exitProgram(1, `An error occurred: ${error.message || error}`);
     }
   }
 
@@ -74,8 +74,10 @@ export class MemoApp {
       if (error?.message?.includes("User force closed the prompt")) {
         this.#exitProgram(1, "\nOperation cancelled by user.");
       }
-      console.error("Failed to process input:", error?.message || error);
-      return;
+      this.#exitProgram(
+        1,
+        `Failed to process input: ${error?.message || error}`,
+      );
     }
     console.log(selectedMemo.content);
   }
@@ -87,31 +89,33 @@ export class MemoApp {
       this.#exitProgram(0, "No memos available to delete.");
     }
 
-    let selectedMemoId;
+    let selectedMemo;
 
     try {
       const response = await inquirer.prompt([
         {
           type: "list",
-          name: "selectedMemoId",
+          name: "selectedMemo",
           message: "Choose a memo you want to delete:",
           choices: memos.map((memo) => ({
             name: memo.content.split("\n")[0],
-            value: memo.id,
+            value: memo,
           })),
         },
       ]);
-      selectedMemoId = response.selectedMemoId;
+      selectedMemo = response.selectedMemo;
     } catch (error) {
       if (error.message.includes("User force closed the prompt")) {
         this.#exitProgram(1, "\nOperation cancelled by user.");
       }
-      console.error("Failed to process input:", error.message);
-      return;
+      this.#exitProgram(
+        1,
+        `Failed to process input: ${error?.message || error}`,
+      );
     }
 
     try {
-      await this.#manager.deleteMemo(selectedMemoId);
+      await this.#manager.deleteMemo(selectedMemo.id);
       this.#exitProgram(0, "Deleted a memo.");
     } catch (error) {
       this.#exitProgram(1, `Failed to delete memo: ${error.message}`);
