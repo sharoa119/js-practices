@@ -41,7 +41,7 @@ export class MemoApp {
     const memos = await this.#retrieveMemos();
 
     if (memos.length === 0) {
-      this.#exitProgram(1, "No memos available.");
+      this.#exitProgram(0, "No memos available.");
     }
     memos.forEach((memo, index) => {
       console.log(`${index + 1}: ${memo.content.split("\n")[0]}`);
@@ -63,7 +63,7 @@ export class MemoApp {
     const memos = await this.#retrieveMemos();
 
     if (memos.length === 0) {
-      this.#exitProgram(1, "No memos available to view.");
+      this.#exitProgram(0, "No memos available to view.");
     }
 
     let selectedMemo;
@@ -95,7 +95,7 @@ export class MemoApp {
     const memos = await this.#retrieveMemos();
 
     if (memos.length === 0) {
-      this.#exitProgram(1, "No memos available to delete.");
+      this.#exitProgram(0, "No memos available to delete.");
     }
 
     let selectedMemoId;
