@@ -38,7 +38,7 @@ export class MemoApp {
   }
 
   async #listMemos() {
-    const memos = await this.#retrieveMemos();
+    const memos = await this.#manager.listMemos();
 
     if (memos.length === 0) {
       this.#exitProgram(0, "No memos available.");
@@ -48,19 +48,8 @@ export class MemoApp {
     });
   }
 
-  async #retrieveMemos() {
-    let memos;
-
-    try {
-      memos = await this.#manager.listMemos();
-    } catch (error) {
-      this.#exitProgram(1, `Failed to retrieve memos: ${error.message}`);
-    }
-    return memos;
-  }
-
   async #viewMemo() {
-    const memos = await this.#retrieveMemos();
+    const memos = await this.#manager.listMemos();
 
     if (memos.length === 0) {
       this.#exitProgram(0, "No memos available to view.");
@@ -92,7 +81,7 @@ export class MemoApp {
   }
 
   async #deleteMemo() {
-    const memos = await this.#retrieveMemos();
+    const memos = await this.#manager.listMemos();
 
     if (memos.length === 0) {
       this.#exitProgram(0, "No memos available to delete.");
