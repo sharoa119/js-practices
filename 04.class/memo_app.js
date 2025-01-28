@@ -62,10 +62,10 @@ export class MemoApp {
 
   async #listMemos() {
     const memos = await this.#manager.listMemos();
-
     if (memos.length === 0) {
       throw new ExitProgram(0, "No memos available.");
     }
+
     memos.forEach((memo, index) => {
       console.log(`${index + 1}: ${memo.content.split("\n")[0]}`);
     });
@@ -73,12 +73,9 @@ export class MemoApp {
 
   async #viewMemo() {
     const memos = await this.#manager.listMemos();
-
     if (memos.length === 0) {
       throw new ExitProgram(0, "No memos available to view.");
     }
-
-    let selectedMemo;
 
     try {
       const response = await inquirer.prompt([
@@ -92,27 +89,18 @@ export class MemoApp {
           })),
         },
       ]);
-      selectedMemo = response.selectedMemo;
+      console.log(response.selectedMemo.content);
     } catch (error) {
-      if (error?.message?.includes("User force closed the prompt")) {
-        throw new ExitProgramError(1, "\nOperation cancelled by user.");
-      }
-      throw new ExitProgramError(
-        1,
-        `Failed to process input: ${error?.message || error}`,
-      );
+      console.error("An error occurred during prompt:", error);
+      throw new ExitProgram(1, "Operation cancelled while selecting a memo.");
     }
-    console.log(selectedMemo.content);
   }
 
   async #deleteMemo() {
     const memos = await this.#manager.listMemos();
-
     if (memos.length === 0) {
-      throw new ExitProgramError(0, "No memos available to delete.");
+      throw new ExitProgram(0, "No memos available to delete.");
     }
-
-    let selectedMemo;
 
     try {
       const response = await inquirer.prompt([
@@ -126,22 +114,11 @@ export class MemoApp {
           })),
         },
       ]);
-      selectedMemo = response.selectedMemo;
-    } catch (error) {
-      if (error.message.includes("User force closed the prompt")) {
-        throw new ExitProgramError(1, "\nOperation cancelled by user.");
-      }
-      throw new ExitProgramError(
-        1,
-        `Failed to process input: ${error.message || error}`,
-      );
-    }
-
-    try {
-      await this.#manager.deleteMemo(selectedMemo.id);
+      await this.#manager.deleteMemo(response.selectedMemo.id);
       console.log("Deleted a memo.");
     } catch (error) {
-      throw new ExitProgramError(1, `Failed to delete memo: ${error.message}`);
+      console.error("An error occurred during prompt:", error);
+      throw new ExitProgram(1, "Failed to delete memo.");
     }
   }
 
@@ -155,10 +132,7 @@ export class MemoApp {
     try {
       content = await this.#readMemoContent();
     } catch (error) {
-      throw new ExitProgramError(
-        1,
-        `Failed to read memo content: ${error.message}`,
-      );
+      throw new ExitProgram(1, `Failed to read memo content: ${error.message}`);
     }
     if (content.trim().length === 0) {
       throw new ExitProgram(0, "Empty memo. Nothing was saved.");
