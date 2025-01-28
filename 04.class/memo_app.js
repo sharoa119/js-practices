@@ -2,11 +2,19 @@ import inquirer from "inquirer";
 import readline from "readline";
 import { MemoManager } from "./memo_manager.js";
 
-class ExitProgramError extends Error {
+class ExitProgram extends Error {
   constructor(code, message) {
     super(message);
-    this.name = "ExitProgramError";
+    this.name = "ExitProgram";
     this.code = code;
+  }
+
+  toConsole() {
+    if (this.code === 0) {
+      console.log(this.message);
+    } else {
+      console.error(this.message);
+    }
   }
 }
 
@@ -25,7 +33,7 @@ export class MemoApp {
     const args = process.argv.slice(2);
 
     if (args.length > 1) {
-      throw new ExitProgramError(
+      throw new ExitProgram(
         1,
         "Error: Only one option is allowed at a time.\nUsage: memo.js -l | -r | -d",
       );
@@ -42,12 +50,8 @@ export class MemoApp {
         await this.#addMemo();
       }
     } catch (error) {
-      if (error instanceof ExitProgramError) {
-        if (error.code === 0) {
-          console.log(error.message);
-        } else {
-          console.error(error.message);
-        }
+      if (error instanceof ExitProgram) {
+        error.toConsole();
         process.exit(error.code);
       } else {
         console.error("Unexpected error:", error.message || error);
@@ -60,7 +64,7 @@ export class MemoApp {
     const memos = await this.#manager.listMemos();
 
     if (memos.length === 0) {
-      throw new ExitProgramError(0, "No memos available.");
+      throw new ExitProgram(0, "No memos available.");
     }
     memos.forEach((memo, index) => {
       console.log(`${index + 1}: ${memo.content.split("\n")[0]}`);
@@ -71,7 +75,7 @@ export class MemoApp {
     const memos = await this.#manager.listMemos();
 
     if (memos.length === 0) {
-      throw new ExitProgramError(0, "No memos available to view.");
+      throw new ExitProgram(0, "No memos available to view.");
     }
 
     let selectedMemo;
@@ -157,14 +161,14 @@ export class MemoApp {
       );
     }
     if (content.trim().length === 0) {
-      throw new ExitProgramError(0, "Empty memo. Nothing was saved.");
+      throw new ExitProgram(0, "Empty memo. Nothing was saved.");
     }
 
     try {
       await this.#manager.addMemo(content.trim());
       console.log("\nAdded a memo.");
     } catch (error) {
-      throw new ExitProgramError(1, `Failed to add memo: ${error.message}`);
+      throw new ExitProgram(1, `Failed to add memo: ${error.message}`);
     }
   }
 
