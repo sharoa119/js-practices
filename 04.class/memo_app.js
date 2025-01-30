@@ -2,22 +2,6 @@ import inquirer from "inquirer";
 import readline from "readline";
 import { MemoManager } from "./memo_manager.js";
 
-class ExitProgram extends Error {
-  constructor(code, message) {
-    super(message);
-    this.name = "ExitProgram";
-    this.code = code;
-  }
-
-  toConsole() {
-    if (this.code === 0) {
-      console.log(this.message);
-    } else {
-      console.error(this.message);
-    }
-  }
-}
-
 export class MemoApp {
   #manager;
 
@@ -33,8 +17,7 @@ export class MemoApp {
     const args = process.argv.slice(2);
 
     if (args.length > 1) {
-      throw new ExitProgram(
-        1,
+      return this.#exitWithError(
         "Error: Only one option is allowed at a time.\nUsage: memo.js -l | -r | -d",
       );
     }
@@ -50,20 +33,20 @@ export class MemoApp {
         await this.#addMemo();
       }
     } catch (error) {
-      if (error instanceof ExitProgram) {
-        error.toConsole();
-        process.exit(error.code);
-      } else {
-        console.error("Unexpected error:", error.message || error);
-        process.exit(1);
-      }
+      this.#exitWithError(error.message || "Unexpected error");
     }
+  }
+
+  #exitWithError(message) {
+    console.error(message);
+    process.exit(1);
   }
 
   async #listMemos() {
     const memos = await this.#manager.listMemos();
     if (memos.length === 0) {
-      throw new ExitProgram(0, "No memos available.");
+      console.log("No memos available.");
+      return;
     }
 
     memos.forEach((memo, index) => {
@@ -74,7 +57,8 @@ export class MemoApp {
   async #viewMemo() {
     const memos = await this.#manager.listMemos();
     if (memos.length === 0) {
-      throw new ExitProgram(0, "No memos available to view.");
+      console.log("No memos available to view.");
+      return;
     }
 
     try {
@@ -92,14 +76,15 @@ export class MemoApp {
       console.log(response.selectedMemo.content);
     } catch (error) {
       console.error("An error occurred during prompt:", error);
-      throw new ExitProgram(1, "Operation cancelled while selecting a memo.");
+      throw new Error("Operation cancelled while selecting a memo.");
     }
   }
 
   async #deleteMemo() {
     const memos = await this.#manager.listMemos();
     if (memos.length === 0) {
-      throw new ExitProgram(0, "No memos available to delete.");
+      console.log("No memos available to delete.");
+      return;
     }
 
     try {
@@ -118,7 +103,7 @@ export class MemoApp {
       console.log("Deleted a memo.");
     } catch (error) {
       console.error("An error occurred during prompt:", error);
-      throw new ExitProgram(1, "Failed to delete memo.");
+      throw new Error("Failed to delete memo.");
     }
   }
 
@@ -132,17 +117,18 @@ export class MemoApp {
     try {
       content = await this.#readMemoContent();
     } catch (error) {
-      throw new ExitProgram(1, `Failed to read memo content: ${error.message}`);
+      throw new Error(`Failed to read memo content: ${error.message}`);
     }
     if (content.trim().length === 0) {
-      throw new ExitProgram(0, "Empty memo. Nothing was saved.");
+      console.log("Empty memo. Nothing was saved.");
+      return;
     }
 
     try {
       await this.#manager.addMemo(content.trim());
       console.log("\nAdded a memo.");
     } catch (error) {
-      throw new ExitProgram(1, `Failed to add memo: ${error.message}`);
+      throw new Error(`Failed to add memo: ${error.message}`);
     }
   }
 
