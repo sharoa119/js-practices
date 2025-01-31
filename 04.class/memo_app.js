@@ -17,9 +17,10 @@ export class MemoApp {
     const args = process.argv.slice(2);
 
     if (args.length > 1) {
-      return this.#exitWithError(
+      console.error(
         "Error: Only one option is allowed at a time.\nUsage: memo.js -l | -r | -d",
       );
+      process.exit(1);
     }
 
     try {
@@ -33,13 +34,9 @@ export class MemoApp {
         await this.#addMemo();
       }
     } catch (error) {
-      this.#exitWithError(error.message || "Unexpected error");
+      console.error(error.message ?? "Unexpected error");
+      process.exit(1);
     }
-  }
-
-  #exitWithError(message) {
-    console.error(message);
-    process.exit(1);
   }
 
   async #listMemos() {
@@ -74,8 +71,7 @@ export class MemoApp {
         },
       ]);
       console.log(response.selectedMemo.content);
-    } catch (error) {
-      console.error("An error occurred during prompt:", error);
+    } catch {
       throw new Error("Operation cancelled while selecting a memo.");
     }
   }
@@ -101,8 +97,7 @@ export class MemoApp {
       ]);
       await this.#manager.deleteMemo(response.selectedMemo.id);
       console.log("Deleted a memo.");
-    } catch (error) {
-      console.error("An error occurred during prompt:", error);
+    } catch {
       throw new Error("Failed to delete memo.");
     }
   }
