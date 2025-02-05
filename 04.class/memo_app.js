@@ -71,8 +71,17 @@ export class MemoApp {
         },
       ]);
       console.log(response.selectedMemo.content);
-    } catch {
-      throw new Error("Operation cancelled while selecting a memo.");
+    } catch (error) {
+      if (error.isTtyError) {
+        throw new Error(
+          "Prompt couldn't be rendered in the current environment.",
+        );
+      } else if (error.message?.toLowerCase().includes("force closed")) {
+        console.log("Operation was cancelled by the user.");
+        return;
+      } else {
+        throw error;
+      }
     }
   }
 
@@ -97,8 +106,17 @@ export class MemoApp {
       ]);
       await this.#manager.deleteMemo(response.selectedMemo.id);
       console.log("Deleted a memo.");
-    } catch {
-      throw new Error("Failed to delete memo.");
+    } catch (error) {
+      if (error.isTtyError) {
+        throw new Error(
+          "Prompt couldn't be rendered in the current environment.",
+        );
+      } else if (error.message?.toLowerCase().includes("force closed")) {
+        console.log("Operation was cancelled by the user.");
+        return;
+      } else {
+        throw error;
+      }
     }
   }
 
