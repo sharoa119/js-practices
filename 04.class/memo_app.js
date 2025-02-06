@@ -72,15 +72,14 @@ export class MemoApp {
       ]);
       console.log(response.selectedMemo.content);
     } catch (error) {
-      if (error.isTtyError) {
+      if (error && error.isTtyError) {
         throw new Error(
           "Prompt couldn't be rendered in the current environment.",
         );
-      } else if (error.message?.toLowerCase().includes("force closed")) {
-        console.log("Operation was cancelled by the user.");
-        return;
+      } else if (error?.message?.includes("force closed")) {
+        throw new Error("Operation was cancelled by the user.");
       } else {
-        throw error;
+        throw error ?? new Error("An unknown error occurred.");
       }
     }
   }
@@ -107,15 +106,14 @@ export class MemoApp {
       await this.#manager.deleteMemo(response.selectedMemo.id);
       console.log("Deleted a memo.");
     } catch (error) {
-      if (error.isTtyError) {
+      if (error && error.isTtyError) {
         throw new Error(
           "Prompt couldn't be rendered in the current environment.",
         );
-      } else if (error.message?.toLowerCase().includes("force closed")) {
-        console.log("Operation was cancelled by the user.");
-        return;
+      } else if (error?.message?.includes("force closed")) {
+        throw new Error("Operation was cancelled by the user.");
       } else {
-        throw error;
+        throw error ?? new Error("An unknown error occurred.");
       }
     }
   }
