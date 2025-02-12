@@ -81,10 +81,9 @@ export class MemoApp {
         if (error.message.includes("force closed")) {
           throw new Error("Operation was cancelled by the user.");
         }
-        throw error;
       }
 
-      throw new Error("An unknown error occurred.");
+      throw error;
     }
   }
 
@@ -119,10 +118,9 @@ export class MemoApp {
         if (error.message.includes("force closed")) {
           throw new Error("Operation was cancelled by the user.");
         }
-        throw error;
       }
 
-      throw new Error("An unknown error occurred.");
+      throw error;
     }
   }
 
